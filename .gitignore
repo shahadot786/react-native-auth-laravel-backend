@@ -21,3 +21,35 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/public/images
+/public/videos
+# Ignore public video and image files
+public/storage/videos/
+public/storage/images/
+/public/videos/*
+/public/images/*
+/storage/app/public/uploads
+/storage/app/public/videos
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+cat .gitignore
+/public/css/
+/public/js/
