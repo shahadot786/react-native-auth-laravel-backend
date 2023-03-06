@@ -13,7 +13,7 @@ class Greeting extends Model
         'title',
         'descriptions',
         'image',
-        'video',
+        'video_url',
         'date',
         'time'
     ];

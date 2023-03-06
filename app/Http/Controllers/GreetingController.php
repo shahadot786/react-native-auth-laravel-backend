@@ -49,6 +49,7 @@ class GreetingController extends Controller
         $greeting = new Greeting;
         $greeting->title = $request->title;
         $greeting->descriptions = $request->descriptions;
+        $greeting->video_url = $request->video_url;
         //image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -60,16 +61,6 @@ class GreetingController extends Controller
             //for development purposes 
             $imageUrl = str_replace($base_url, 'http://10.0.2.2:8000', $imageUrl);
             $greeting->image = $imageUrl;
-        }
-
-        if ($request->hasFile('video')) {
-            $video = $request->file('video');
-            $filename = time() . '.' . $video->getClientOriginalExtension();
-            $video->move(public_path('videos'), $filename);
-            $videoUrl = asset('videos/' . $filename);
-            $base_url = url('/');
-            $videoUrl = str_replace($base_url, 'http://10.0.2.2:8000', $videoUrl);
-            $greeting->video = $videoUrl;
         }
         //date & time
         $greeting->date = $request->date;
