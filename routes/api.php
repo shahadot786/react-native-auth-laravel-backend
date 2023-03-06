@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GreetingController;
+use App\Http\Controllers\VideoController;
 
 //public user api routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -15,7 +16,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //protected greetings api routes
 //single api resources route
+//greetings api
 Route::apiResource('greetings', GreetingController::class)->middleware('auth:sanctum');
+//videos api
+Route::apiResource('videos', VideoController::class)->middleware('auth:sanctum');
 
 //test video upload api public
 Route::post('/upload-video', [GreetingController::class, 'uploadVideo']);

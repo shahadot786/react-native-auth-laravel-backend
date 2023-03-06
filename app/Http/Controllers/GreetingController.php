@@ -19,9 +19,9 @@ class GreetingController extends Controller
         $greetings = Greeting::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
+        return response()->json(['greetings' => $greetings]);
         //$greeting = greeting::orderBy('created_at', 'desc')->get();
         // $greetings = Greeting::orderBy('created_at', 'desc')->get();
-        return response()->json(['greetings' => $greetings]);
     }
 
     /**
@@ -29,7 +29,7 @@ class GreetingController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         // //validate the input
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -61,7 +61,7 @@ class GreetingController extends Controller
             $imageUrl = str_replace($base_url, 'http://10.0.2.2:8000', $imageUrl);
             $greeting->image = $imageUrl;
         }
-    
+
         if ($request->hasFile('video')) {
             $video = $request->file('video');
             $filename = time() . '.' . $video->getClientOriginalExtension();
