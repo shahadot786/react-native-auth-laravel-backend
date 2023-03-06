@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('descriptions')->nullable();
             $table->string('image')->nullable();
             $table->string('video_url')->nullable();
-            $table->string('date');
-            $table->string('time');
+            $table->string('date')->nullable();
+            $table->string('time')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

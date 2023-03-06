@@ -32,8 +32,8 @@ class GreetingController extends Controller
 
         // //validate the input
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'descriptions' => 'required|string|max:4072',
+            'title' => 'nullable|string|max:255',
+            'descriptions' => 'nullable|string|max:4072',
             // 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10048',
             // 'video' => 'nullable|file|mimes:mp4,avi,mov,wmv|max:1000480',
             'date' => 'nullable',
@@ -49,7 +49,6 @@ class GreetingController extends Controller
         $greeting = new Greeting;
         $greeting->title = $request->title;
         $greeting->descriptions = $request->descriptions;
-        $greeting->video_url = $request->video_url;
         //image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -61,6 +60,16 @@ class GreetingController extends Controller
             //for development purposes 
             $imageUrl = str_replace($base_url, 'http://10.0.2.2:8000', $imageUrl);
             $greeting->image = $imageUrl;
+        }
+
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $filename = time() . '.' . $video->getClientOriginalExtension();
+            $video->move(public_path('videos'), $filename);
+            $videoUrl = asset('videos/' . $filename);
+            $base_url = url('/');
+            $videoUrl = str_replace($base_url, 'http://10.0.2.2:8000', $videoUrl);
+            $greeting->video = $videoUrl;
         }
         //date & time
         $greeting->date = $request->date;
@@ -93,48 +102,56 @@ class GreetingController extends Controller
     public function update(Request $request, $id)
     {
         // //validate the input
-        // $validator = Validator::make($request->all(), [
-        //     'title' => 'required|string|max:255',
-        //     'descriptions' => 'required|string|max:500',
-        //     // 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
-        //     // 'video' => 'nullable|file|mimes:mp4,avi,mov,wmv|max:20480',
-        //     'date' => 'required|date',
-        //     'time' => 'required',
-        // ]);
-        // // error handel
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
-        // //update the data to table
-        // $user = $request->user();
-        // $greeting = Greeting::where('user_id', $user->id)->findOrFail($id);
-        // $greeting->title = $request->title;
-        // $greeting->descriptions = $request->descriptions;
-        // //image
-        // if ($request->hasFile('image')) {
-        //     $image = $request->file('image');
-        //     $imageName = time() . '.' . $image->getClientOriginalExtension();
-        //     $image->move(public_path('images'), $imageName);
-        //     $greeting->image = $imageName;
-        // }
-        // //video
-        // if ($request->hasFile('video')) {
-        //     $video = $request->file('video');
-        //     $videoName = time() . '.' . $video->getClientOriginalExtension();
-        //     $video->move(public_path('videos'), $videoName);
-        //     $greeting->video = $videoName;
-        // }
-        // //date & time
-        // $greeting->date = $request->date;
-        // $greeting->time = $request->time;
+        $validator = Validator::make($request->all(), [
+            'title' => 'nullable|string|max:255',
+            'descriptions' => 'nullable|string|max:4072',
+            // 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10048',
+            // 'video' => 'nullable|file|mimes:mp4,avi,mov,wmv|max:1000480',
+            'date' => 'nullable',
+            'time' => 'nullable',
+        ]);
+        // error handel
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        //update the data to table
+        $user = $request->user();
+        $greeting = Greeting::where('user_id', $user->id)->findOrFail($id);
+        $greeting->title = $request->title;
+        $greeting->descriptions = $request->descriptions;
+        //image
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+            $imageUrl = asset('images/' . $imageName);
+            $base_url = url('/');
+            // Replace base URL with emulator IP address
+            //for development purposes 
+            $imageUrl = str_replace($base_url, 'http://10.0.2.2:8000', $imageUrl);
+            $greeting->image = $imageUrl;
+        }
 
-        // $greeting->save();
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $filename = time() . '.' . $video->getClientOriginalExtension();
+            $video->move(public_path('videos'), $filename);
+            $videoUrl = asset('videos/' . $filename);
+            $base_url = url('/');
+            $videoUrl = str_replace($base_url, 'http://10.0.2.2:8000', $videoUrl);
+            $greeting->video = $videoUrl;
+        }
+        //date & time
+        $greeting->date = $request->date;
+        $greeting->time = $request->time;
+        $greeting->user()->associate($user);
+        $greeting->save();
 
-        // return response()->json([
-        //     'message' => "Greetings Updated Successfully",
-        //     'status' => 'Success',
-        //     'greetings' => $greeting
-        // ], 201);
+        return response()->json([
+            'message' => "Greetings Created Successfully",
+            'status' => 'Success',
+            'greetings' => $greeting
+        ], 201);
     }
 
     /**
@@ -142,13 +159,13 @@ class GreetingController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        // $user = $request->user();
-        // $greeting = Greeting::where('user_id', $user->id)->findOrFail($id);
-        // $greeting->delete();
-        // return response()->json([
-        //     'message' => 'Greetings Deleted Successfully',
-        //     'status' => 'Success'
-        // ]);
+        $user = $request->user();
+        $greeting = Greeting::where('user_id', $user->id)->findOrFail($id);
+        $greeting->delete();
+        return response()->json([
+            'message' => 'Greetings Deleted Successfully',
+            'status' => 'Success'
+        ]);
     }
 
     //upload video
