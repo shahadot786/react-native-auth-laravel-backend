@@ -19,10 +19,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //greetings api
 Route::apiResource('greetings', GreetingController::class)->middleware('auth:sanctum');
 //videos api
-Route::apiResource('videos', VideoController::class)->middleware('auth:sanctum');
+// Route::apiResource('videos', VideoController::class)->middleware('auth:sanctum');
 
-//test video upload api public
-Route::post('/upload-video', [GreetingController::class, 'uploadVideo']);
+// //test video upload api public
+// Route::post('/upload-video', [GreetingController::class, 'uploadVideo']);
 
 //route group
 // Route::middleware('auth:sanctum')->group(function (){

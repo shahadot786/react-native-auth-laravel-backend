@@ -36,8 +36,8 @@ class GreetingController extends Controller
             'descriptions' => 'nullable|string|max:4072',
             // 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10048',
             // 'video' => 'nullable|file|mimes:mp4,avi,mov,wmv|max:1000480',
-            'date' => 'nullable',
-            'time' => 'nullable',
+            'date' => 'nullable|string',
+            'time' => 'nullable|string',
         ]);
         // error handel
         if ($validator->fails()) {
@@ -107,8 +107,8 @@ class GreetingController extends Controller
             'descriptions' => 'nullable|string|max:4072',
             // 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10048',
             // 'video' => 'nullable|file|mimes:mp4,avi,mov,wmv|max:1000480',
-            'date' => 'nullable',
-            'time' => 'nullable',
+            'date' => 'nullable|string',
+            'time' => 'nullable|string',
         ]);
         // error handel
         if ($validator->fails()) {
@@ -132,15 +132,15 @@ class GreetingController extends Controller
             $greeting->image = $imageUrl;
         }
 
-        if ($request->hasFile('video')) {
-            $video = $request->file('video');
-            $filename = time() . '.' . $video->getClientOriginalExtension();
-            $video->move(public_path('videos'), $filename);
-            $videoUrl = asset('videos/' . $filename);
-            $base_url = url('/');
-            $videoUrl = str_replace($base_url, 'http://10.0.2.2:8000', $videoUrl);
-            $greeting->video = $videoUrl;
-        }
+        // if ($request->hasFile('video')) {
+        //     $video = $request->file('video');
+        //     $filename = time() . '.' . $video->getClientOriginalExtension();
+        //     $video->move(public_path('videos'), $filename);
+        //     $videoUrl = asset('videos/' . $filename);
+        //     $base_url = url('/');
+        //     $videoUrl = str_replace($base_url, 'http://10.0.2.2:8000', $videoUrl);
+        //     $greeting->video = $videoUrl;
+        // }
         //date & time
         $greeting->date = $request->date;
         $greeting->time = $request->time;
@@ -161,6 +161,19 @@ class GreetingController extends Controller
     {
         $user = $request->user();
         $greeting = Greeting::where('user_id', $user->id)->findOrFail($id);
+        // Delete the image and video files associated with the greeting
+        if ($greeting->image) {
+            $imagePath = public_path(str_replace(url('/'), '', $greeting->image));
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        if ($greeting->video) {
+            $video_path = public_path(str_replace(url('/'), '', $greeting->video));
+            if (file_exists($video_path)) {
+                unlink($video_path);
+            }
+        }
         $greeting->delete();
         return response()->json([
             'message' => 'Greetings Deleted Successfully',
